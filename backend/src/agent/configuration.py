@@ -1,8 +1,10 @@
+"""Configuration settings for the research agent."""
+
 import os
-from pydantic import BaseModel, Field
 from typing import Any, Optional
 
 from langchain_core.runnables import RunnableConfig
+from pydantic import BaseModel, Field
 
 
 class Configuration(BaseModel):
@@ -29,6 +31,20 @@ class Configuration(BaseModel):
         },
     )
 
+    openai_query_model: str = Field(
+        default="gpt-4o",
+        metadata={
+            "description": "Optional OpenAI model used for query generation.",
+        },
+    )
+
+    openai_answer_model: str = Field(
+        default="gpt-4o",
+        metadata={
+            "description": "Optional OpenAI model used for answer generation.",
+        },
+    )
+
     number_of_initial_queries: int = Field(
         default=3,
         metadata={"description": "The number of initial search queries to generate."},
@@ -48,11 +64,15 @@ class Configuration(BaseModel):
             config["configurable"] if config and "configurable" in config else {}
         )
 
-        # Get raw values from environment or config
-        raw_values: dict[str, Any] = {
-            name: os.environ.get(name.upper(), configurable.get(name))
-            for name in cls.model_fields.keys()
-        }
+        # Get raw values from environment or config with environment variables
+        # taking precedence over values supplied via ``configurable``.
+        raw_values: dict[str, Any] = {}
+        for name in cls.model_fields.keys():
+            env_value = os.environ.get(name.upper())
+            if env_value is not None:
+                raw_values[name] = env_value
+            elif configurable.get(name) is not None:
+                raw_values[name] = configurable.get(name)
 
         # Filter out None values
         values = {k: v for k, v in raw_values.items() if v is not None}

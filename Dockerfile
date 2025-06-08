@@ -19,6 +19,9 @@ RUN npm run build
 # Stage 2: Python Backend
 FROM docker.io/langchain/langgraph-api:3.11
 
+# Allow passing an OpenAI API key at runtime
+ENV OPENAI_API_KEY="${OPENAI_API_KEY}"
+
 # -- Install UV --
 # First install curl, then install UV using the standalone installer
 RUN apt-get update && apt-get install -y curl && \

@@ -67,8 +67,8 @@ def _init_model(model_name: str, temperature: float):
 def generate_query(state: OverallState, config: RunnableConfig) -> QueryGenerationState:
     """LangGraph node that generates a search queries based on the User's question.
 
-    Uses Gemini 2.0 Flash to create an optimized search query for web research based on
-    the User's question.
+    Uses a language model (Gemini 2.0 Flash by default) to create an optimized
+    search query for web research based on the User's question.
 
     Args:
         state: Current graph state containing the User's question

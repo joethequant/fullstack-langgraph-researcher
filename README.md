@@ -30,7 +30,7 @@ Follow these steps to get the application running locally for development and te
 -   Node.js and npm (or yarn/pnpm)
 -   Python 3.8+
 -   **`GEMINI_API_KEY`**: Required for the default Google Gemini models (or provide another provider's key for your chosen model).
--   **`OPENAI_API_KEY`**: Required if you enable optional OpenAI features.
+-   **`OPENAI_API_KEY`**: Required if you want to use OpenAI models.
 -   **`SERPAPI_API_KEY`**: Used for web search via SerpAPI.
     1.  Navigate to the `backend/` directory.
     2.  Create a file named `.env` by copying the `backend/.env.example` file.
@@ -65,6 +65,17 @@ make dev
 This will run the backend and frontend development servers.    Open your browser and navigate to the frontend development server URL (e.g., `http://localhost:5173/app`).
 
 _Alternatively, you can run the backend and frontend development servers separately. For the backend, open a terminal in the `backend/` directory and run `langgraph dev`. The backend API will be available at `http://127.0.0.1:2024`. It will also open a browser window to the LangGraph UI. For the frontend, open a terminal in the `frontend/` directory and run `npm run dev`. The frontend will be available at `http://localhost:5173`._
+
+### Enabling OpenAI Models
+
+1. Ensure the OpenAI Python client is installed. It is included when running `pip install .` inside the `backend/` directory, but you can also install it manually:
+
+   ```bash
+   pip install openai
+   ```
+
+2. Set `OPENAI_API_KEY` in your `.env` file (see **Prerequisites** above).
+3. Start the application and choose an OpenAI option (for example **gpt-4o**) from the **Model** dropdown in the UI.
 
 ## How the Backend Agent Works (High-Level)
 

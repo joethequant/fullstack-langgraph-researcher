@@ -119,6 +119,16 @@ Open your browser and navigate to `http://localhost:8123/app/` to see the applic
 - [LangGraph](https://github.com/langchain-ai/langgraph) - For building the backend research agent.
 - LLM provider (default: [Google Gemini](https://ai.google.dev/models/gemini)) for query generation, reflection, and answer synthesis.
 
+## Running Tests
+
+Unit tests live in `backend/tests`. Run them with:
+
+```bash
+cd backend
+pytest
+```
+
+
 ## License
 
 This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details. 

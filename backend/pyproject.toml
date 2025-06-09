@@ -19,6 +19,7 @@ dependencies = [
     "fastapi",
     "google-genai",
     "openai",
+    "requests>=2.31.0",
 ]
 
 

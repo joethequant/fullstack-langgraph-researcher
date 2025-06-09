@@ -160,6 +160,22 @@ export const InputForm: React.FC<InputFormProps> = ({
                     <Cpu className="h-4 w-4 mr-2 text-purple-400" /> 2.5 Pro
                   </div>
                 </SelectItem>
+                <SelectItem
+                  value="gpt-3.5-turbo"
+                  className="hover:bg-neutral-600 focus:bg-neutral-600 cursor-pointer"
+                >
+                  <div className="flex items-center">
+                    <Brain className="h-4 w-4 mr-2 text-green-400" /> gpt-3.5-turbo
+                  </div>
+                </SelectItem>
+                <SelectItem
+                  value="gpt-4o"
+                  className="hover:bg-neutral-600 focus:bg-neutral-600 cursor-pointer"
+                >
+                  <div className="flex items-center">
+                    <Brain className="h-4 w-4 mr-2 text-green-400" /> gpt-4o
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>

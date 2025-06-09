@@ -19,8 +19,9 @@ RUN npm run build
 # Stage 2: Python Backend
 FROM docker.io/langchain/langgraph-api:3.11
 
-# Allow passing an OpenAI API key at runtime
-ENV OPENAI_API_KEY="${OPENAI_API_KEY}"
+# Accept an OpenAI API key at build time or runtime
+ARG OPENAI_API_KEY
+ENV OPENAI_API_KEY=${OPENAI_API_KEY}
 
 # -- Install UV --
 # First install curl, then install UV using the standalone installer
@@ -45,7 +46,8 @@ ADD backend/ /deps/backend
 RUN uv pip install --system pip setuptools wheel
 # Install dependencies with UV, respecting constraints
 RUN cd /deps/backend && \
-    PYTHONDONTWRITEBYTECODE=1 UV_SYSTEM_PYTHON=1 uv pip install --system -c /api/constraints.txt -e .
+    PYTHONDONTWRITEBYTECODE=1 UV_SYSTEM_PYTHON=1 uv pip install --system -c /api/constraints.txt -e . && \
+    uv pip install --system openai langchain-openai
 # -- End of local dependencies install --
 ENV LANGGRAPH_HTTP='{"app": "/deps/backend/src/agent/app.py:app"}'
 ENV LANGSERVE_GRAPHS='{"agent": "/deps/backend/src/agent/graph.py:graph"}'

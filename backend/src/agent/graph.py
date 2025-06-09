@@ -30,9 +30,6 @@ from agent.utils import get_research_topic
 
 load_dotenv()
 
-if os.getenv("GEMINI_API_KEY") is None:
-    raise ValueError("GEMINI_API_KEY is not set")
-
 
 def _init_model(model_name: str, temperature: float):
     """Return a chat model instance for the given model name.

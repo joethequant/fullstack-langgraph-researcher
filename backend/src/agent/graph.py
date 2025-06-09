@@ -1,37 +1,32 @@
+"""LangGraph agent definition."""
+
 import os
 
-from agent.tools_and_schemas import SearchQueryList, Reflection
 from dotenv import load_dotenv
 from langchain_core.messages import AIMessage
-from langgraph.types import Send
-from langgraph.graph import StateGraph
-from langgraph.graph import START, END
 from langchain_core.runnables import RunnableConfig
-from google.genai import Client
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
+from langgraph.graph import END, START, StateGraph
+from langgraph.types import Send
 
+from agent.configuration import Configuration
+from agent.prompts import (
+    answer_instructions,
+    get_current_date,
+    query_writer_instructions,
+    reflection_instructions,
+    web_searcher_instructions,
+)
+from agent.search import serpapi_search
 from agent.state import (
     OverallState,
     QueryGenerationState,
     ReflectionState,
     WebSearchState,
 )
-from agent.configuration import Configuration
-from agent.prompts import (
-    get_current_date,
-    query_writer_instructions,
-    web_searcher_instructions,
-    reflection_instructions,
-    answer_instructions,
-)
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_openai import ChatOpenAI
-from agent.utils import (
-    get_citations,
-    get_research_topic,
-    insert_citation_markers,
-    resolve_urls,
-)
-
+from agent.tools_and_schemas import Reflection, SearchQueryList
+from agent.utils import get_research_topic
 
 load_dotenv()
 
@@ -46,7 +41,6 @@ def _init_model(model_name: str, temperature: float):
     Otherwise ``ChatGoogleGenerativeAI`` is used.
     Raises a ``ValueError`` when the required API key is missing.
     """
-
     if "gpt" in model_name.lower() or "openai" in model_name.lower():
         openai_key = os.getenv("OPENAI_API_KEY")
         if openai_key is None:
@@ -67,9 +61,6 @@ def _init_model(model_name: str, temperature: float):
         max_retries=2,
         api_key=gemini_key,
     )
-
-# Used for Google Search API
-genai_client = Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 
 # Nodes
@@ -119,41 +110,47 @@ def continue_to_web_research(state: QueryGenerationState):
 
 
 def web_research(state: WebSearchState, config: RunnableConfig) -> OverallState:
-    """LangGraph node that performs web research using the native Google Search API tool.
-
-    Executes a web search using the native Google Search API tool in combination with Gemini 2.0 Flash.
-
-    Args:
-        state: Current graph state containing the search query and research loop count
-        config: Configuration for the runnable, including search API settings
-
-    Returns:
-        Dictionary with state update, including sources_gathered, research_loop_count, and web_research_results
-    """
-    # Configure
+    """LangGraph node that performs web research via SerpAPI."""
     configurable = Configuration.from_runnable_config(config)
+
+    # Query SerpAPI for search results
+    results = serpapi_search(state["search_query"])
+
+    resolved_urls = {
+        r["link"]: f"https://vertexaisearch.cloud.google.com/id/{state['id']}-{idx}"
+        for idx, r in enumerate(results)
+    }
+
+    # Build a short summary prompt including the search results
+    search_context = "\n".join(
+        f"[{idx}] {r['title']} - {r['snippet']}" for idx, r in enumerate(results)
+    )
+
     formatted_prompt = web_searcher_instructions.format(
         current_date=get_current_date(),
         research_topic=state["search_query"],
     )
+    prompt = (
+        formatted_prompt
+        + "\n\nSearch Results:\n"
+        + search_context
+        + "\n\nUse the results to craft a short summary. Cite sources using [index]."
+    )
 
-    # Uses the google genai client as the langchain client doesn't return grounding metadata
-    response = genai_client.models.generate_content(
-        model=configurable.query_generator_model,
-        contents=formatted_prompt,
-        config={
-            "tools": [{"google_search": {}}],
-            "temperature": 0,
-        },
-    )
-    # resolve the urls to short urls for saving tokens and time
-    resolved_urls = resolve_urls(
-        response.candidates[0].grounding_metadata.grounding_chunks, state["id"]
-    )
-    # Gets the citations and adds them to the generated text
-    citations = get_citations(response, resolved_urls)
-    modified_text = insert_citation_markers(response.text, citations)
-    sources_gathered = [item for citation in citations for item in citation["segments"]]
+    llm = _init_model(configurable.query_generator_model, temperature=0)
+    response = llm.invoke(prompt)
+    modified_text = response.content
+
+    sources_gathered = []
+    for idx, r in enumerate(results):
+        marker = f"[{idx}]"
+        short_url = resolved_urls[r["link"]]
+        label = r["title"].split(".")[0]
+        if marker in modified_text:
+            modified_text = modified_text.replace(marker, f"[{label}]({short_url})")
+            sources_gathered.append(
+                {"label": label, "short_url": short_url, "value": r["link"]}
+            )
 
     return {
         "sources_gathered": sources_gathered,

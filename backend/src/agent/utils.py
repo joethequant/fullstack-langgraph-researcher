@@ -77,7 +77,7 @@ def insert_citation_markers(text, citations_list):
 
 def get_citations(response, resolved_urls_map):
     """
-    Extracts and formats citation information from a Gemini model's response.
+    Extracts and formats citation information from a language model's response.
 
     This function processes the grounding metadata provided in the response to
     construct a list of citation objects. Each citation object includes the
@@ -85,7 +85,7 @@ def get_citations(response, resolved_urls_map):
     containing formatted markdown links to the supporting web chunks.
 
     Args:
-        response: The response object from the Gemini model, expected to have
+        response: The response object from the language model (Gemini by default), expected to have
                   a structure including `candidates[0].grounding_metadata`.
                   It also relies on a `resolved_map` being available in its
                   scope to map chunk URIs to resolved URLs.

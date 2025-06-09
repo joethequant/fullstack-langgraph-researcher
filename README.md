@@ -1,14 +1,14 @@
-# Gemini Fullstack LangGraph Quickstart
+# Fullstack LangGraph Quickstart
 
-This project demonstrates a fullstack application using a React frontend and a LangGraph-powered backend agent. The agent is designed to perform comprehensive research on a user's query by dynamically generating search terms, querying the web via SerpAPI, reflecting on the results to identify knowledge gaps, and iteratively refining its search until it can provide a well-supported answer with citations. This application serves as an example of building research-augmented conversational AI using LangGraph and Google's Gemini models.
+This project demonstrates a fullstack application using a React frontend and a LangGraph-powered backend agent. The agent is designed to perform comprehensive research on a user's query by dynamically generating search terms, querying the web via SerpAPI, reflecting on the results to identify knowledge gaps, and iteratively refining its search until it can provide a well-supported answer with citations. This application serves as an example of building research-augmented conversational AI using LangGraph and configurable language models (Gemini by default).
 
-![Gemini Fullstack LangGraph](./app.png)
+![Fullstack LangGraph](./app.png)
 
 ## Features
 
 - 💬 Fullstack application with a React frontend and LangGraph backend.
 - 🧠 Powered by a LangGraph agent for advanced research and conversational AI.
-- 🔍 Dynamic search query generation using Google Gemini models.
+- 🔍 Dynamic search query generation using configurable language models (Gemini by default).
 - 🌐 Integrated web research via SerpAPI.
 - 🤔 Reflective reasoning to identify knowledge gaps and refine searches.
 - 📄 Generates answers with citations from gathered sources.
@@ -29,7 +29,7 @@ Follow these steps to get the application running locally for development and te
 
 -   Node.js and npm (or yarn/pnpm)
 -   Python 3.8+
--   **`GEMINI_API_KEY`**: The backend agent requires a Google Gemini API key.
+-   **`GEMINI_API_KEY`**: Required for the default Google Gemini models (or provide another provider's key for your chosen model).
 -   **`OPENAI_API_KEY`**: Required if you enable optional OpenAI features.
 -   **`SERPAPI_API_KEY`**: Used for web search via SerpAPI.
     1.  Navigate to the `backend/` directory.
@@ -72,11 +72,11 @@ The core of the backend is a LangGraph agent defined in `backend/src/agent/graph
 
 ![Agent Flow](./agent.png)
 
-1.  **Generate Initial Queries:** Based on your input, it generates a set of initial search queries using a Gemini model.
-2.  **Web Research:** For each query, it uses the Gemini model together with SerpAPI to find relevant web pages.
-3.  **Reflection & Knowledge Gap Analysis:** The agent analyzes the search results to determine if the information is sufficient or if there are knowledge gaps. It uses a Gemini model for this reflection process.
+1.  **Generate Initial Queries:** Based on your input, it generates a set of initial search queries using a language model (Gemini by default).
+2.  **Web Research:** For each query, it uses the selected model together with SerpAPI to find relevant web pages.
+3.  **Reflection & Knowledge Gap Analysis:** The agent analyzes the search results to determine if the information is sufficient or if there are knowledge gaps. It uses the chosen model for this reflection process.
 4.  **Iterative Refinement:** If gaps are found or the information is insufficient, it generates follow-up queries and repeats the web research and reflection steps (up to a configured maximum number of loops).
-5.  **Finalize Answer:** Once the research is deemed sufficient, the agent synthesizes the gathered information into a coherent answer, including citations from the web sources, using a Gemini model.
+5.  **Finalize Answer:** Once the research is deemed sufficient, the agent synthesizes the gathered information into a coherent answer, including citations from the web sources, using the selected model.
 
 ## Deployment
 
@@ -106,7 +106,7 @@ Open your browser and navigate to `http://localhost:8123/app/` to see the applic
 - [Tailwind CSS](https://tailwindcss.com/) - For styling.
 - [Shadcn UI](https://ui.shadcn.com/) - For components.
 - [LangGraph](https://github.com/langchain-ai/langgraph) - For building the backend research agent.
-- [Google Gemini](https://ai.google.dev/models/gemini) - LLM for query generation, reflection, and answer synthesis.
+- LLM provider (default: [Google Gemini](https://ai.google.dev/models/gemini)) for query generation, reflection, and answer synthesis.
 
 ## License
 

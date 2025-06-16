@@ -15,6 +15,9 @@ dev-backend:
 	@cd backend && langgraph dev
 
 # Run frontend and backend concurrently
+# dev:
+# 	@echo "Starting both frontend and backend development servers..."
+# 	@make dev-frontend & make dev-backend
 dev:
 	@echo "Starting both frontend and backend development servers..."
-	@make dev-frontend & make dev-backend 
+	@(make dev-frontend) & (make dev-backend) & wait

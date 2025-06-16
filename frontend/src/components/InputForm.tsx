@@ -26,7 +26,7 @@ export const InputForm: React.FC<InputFormProps> = ({
 }) => {
   const [internalInputValue, setInternalInputValue] = useState("");
   const [effort, setEffort] = useState("medium");
-  const [model, setModel] = useState("gemini-2.5-flash-preview-04-17");
+  const [model, setModel] = useState("o3-mini");
 
   const handleInternalSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -176,6 +176,27 @@ export const InputForm: React.FC<InputFormProps> = ({
                     <Brain className="h-4 w-4 mr-2 text-green-400" /> gpt-4o
                   </div>
                 </SelectItem>
+
+                <SelectItem
+                  value="gpt-4.1"
+                  className="hover:bg-neutral-600 focus:bg-neutral-600 cursor-pointer"
+                >
+                  <div className="flex items-center">
+                    <Brain className="h-4 w-4 mr-2 text-green-400" /> gpt-4.1
+                  </div>
+                </SelectItem>
+
+                <SelectItem
+                  value="o3-mini"
+                  className="hover:bg-neutral-600 focus:bg-neutral-600 cursor-pointer"
+                >
+                  <div className="flex items-center">
+                    <Brain className="h-4 w-4 mr-2 text-green-400" /> o3-mini
+                  </div>
+                </SelectItem>
+
+
+
               </SelectContent>
             </Select>
           </div>

@@ -38,13 +38,13 @@ def _init_model(model_name: str, temperature: float):
     Otherwise ``ChatGoogleGenerativeAI`` is used.
     Raises a ``ValueError`` when the required API key is missing.
     """
-    if "gpt" in model_name.lower() or "openai" in model_name.lower():
+    if "gpt" in model_name.lower() or "openai" in model_name.lower() or "o3" in model_name.lower():
         openai_key = os.getenv("OPENAI_API_KEY")
         if openai_key is None:
             raise ValueError("OPENAI_API_KEY is not set")
         return ChatOpenAI(
             model=model_name,
-            temperature=temperature,
+            # temperature=temperature,
             max_retries=2,
             api_key=openai_key,
         )
@@ -184,6 +184,8 @@ def reflection(state: OverallState, config: RunnableConfig) -> ReflectionState:
     )
     llm = _init_model(reasoning_model, temperature=1.0)
     result = llm.with_structured_output(Reflection).invoke(formatted_prompt)
+
+    print(result)
 
     return {
         "is_sufficient": result.is_sufficient,

@@ -11,39 +11,46 @@ class Configuration(BaseModel):
     """The configuration for the agent."""
 
     query_generator_model: str = Field(
-        default="gemini-2.0-flash",
+        default="o3-mini",
         metadata={
             "description": "The name of the language model to use for the agent's query generation."
         },
     )
 
     reflection_model: str = Field(
-        default="gemini-2.5-flash-preview-04-17",
+        default="o3-mini",
         metadata={
             "description": "The name of the language model to use for the agent's reflection."
         },
     )
 
+    reasoning_model: str = Field(
+        default="o3-mini",
+        metadata={
+            "description": "The name of the language model to use for the agent's reasoning."
+        },
+    )
+
     answer_model: str = Field(
-        default="gemini-2.5-pro-preview-05-06",
+        default="o3-mini",
         metadata={
             "description": "The name of the language model to use for the agent's answer."
         },
     )
 
     openai_query_model: str = Field(
-        default="gpt-4o",
+        default="o3-mini",
         metadata={
             "description": "Optional OpenAI model used for query generation.",
         },
     )
 
     openai_answer_model: str = Field(
-        default="gpt-4o",
+        default="o3-mini",
         metadata={
             "description": "Optional OpenAI model used for answer generation.",
         },
-    )
+    )   
 
     number_of_initial_queries: int = Field(
         default=3,

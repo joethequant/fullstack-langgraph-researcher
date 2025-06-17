@@ -185,7 +185,6 @@ def reflection(state: OverallState, config: RunnableConfig) -> ReflectionState:
     llm = _init_model(reasoning_model, temperature=1.0)
     result = llm.with_structured_output(Reflection).invoke(formatted_prompt)
 
-    print(result)
 
     return {
         "is_sufficient": result.is_sufficient,

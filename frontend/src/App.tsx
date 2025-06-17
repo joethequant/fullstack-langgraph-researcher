@@ -12,6 +12,7 @@ export default function App() {
   const [historicalActivities, setHistoricalActivities] = useState<
     Record<string, ProcessedEvent[]>
   >({});
+  const [displayMessages, setDisplayMessages] = useState<Message[]>([]);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const hasFinalizeEventOccurredRef = useRef(false);
 
@@ -28,6 +29,9 @@ export default function App() {
     messagesKey: "messages",
     onFinish: (event: any) => {
       console.log(event);
+      if (event?.values?.messages) {
+        setDisplayMessages(event.values.messages as Message[]);
+      }
     },
     onUpdateEvent: (event: any) => {
       let processedEvent: ProcessedEvent | null = null;
@@ -83,15 +87,16 @@ export default function App() {
         scrollViewport.scrollTop = scrollViewport.scrollHeight;
       }
     }
+    setDisplayMessages(thread.messages);
   }, [thread.messages]);
 
   useEffect(() => {
     if (
       hasFinalizeEventOccurredRef.current &&
       !thread.isLoading &&
-      thread.messages.length > 0
+      displayMessages.length > 0
     ) {
-      const lastMessage = thread.messages[thread.messages.length - 1];
+      const lastMessage = displayMessages[displayMessages.length - 1];
       if (lastMessage && lastMessage.type === "ai" && lastMessage.id) {
         setHistoricalActivities((prev) => ({
           ...prev,
@@ -100,7 +105,7 @@ export default function App() {
       }
       hasFinalizeEventOccurredRef.current = false;
     }
-  }, [thread.messages, thread.isLoading, processedEventsTimeline]);
+  }, [displayMessages, thread.isLoading, processedEventsTimeline]);
 
   const handleSubmit = useCallback(
     (submittedInputValue: string, effort: string, model: string) => {
@@ -130,7 +135,7 @@ export default function App() {
       }
 
       const newMessages: Message[] = [
-        ...(thread.messages || []),
+        ...(displayMessages || []),
         {
           type: "human",
           content: submittedInputValue,
@@ -144,7 +149,7 @@ export default function App() {
         reasoning_model: model,
       });
     },
-    [thread]
+    [thread, displayMessages]
   );
 
   const handleCancel = useCallback(() => {
@@ -157,10 +162,10 @@ export default function App() {
       <main className="flex-1 flex flex-col overflow-hidden max-w-4xl mx-auto w-full">
         <div
           className={`flex-1 overflow-y-auto ${
-            thread.messages.length === 0 ? "flex" : ""
+            displayMessages.length === 0 ? "flex" : ""
           }`}
         >
-          {thread.messages.length === 0 ? (
+          {displayMessages.length === 0 ? (
             <WelcomeScreen
               handleSubmit={handleSubmit}
               isLoading={thread.isLoading}
@@ -168,7 +173,7 @@ export default function App() {
             />
           ) : (
             <ChatMessagesView
-              messages={thread.messages}
+              messages={displayMessages}
               isLoading={thread.isLoading}
               scrollAreaRef={scrollAreaRef}
               onSubmit={handleSubmit}

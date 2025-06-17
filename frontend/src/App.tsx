@@ -125,7 +125,7 @@ export default function App() {
           break;
         case "high":
           initial_search_query_count = 5;
-          max_research_loops = 10;
+          max_research_loops = 30;
           break;
       }
 

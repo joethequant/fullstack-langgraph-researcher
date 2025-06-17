@@ -38,7 +38,7 @@ def _init_model(model_name: str, temperature: float):
     Otherwise ``ChatGoogleGenerativeAI`` is used.
     Raises a ``ValueError`` when the required API key is missing.
     """
-    if "gpt" in model_name.lower() or "openai" in model_name.lower() or "o3" in model_name.lower():
+    if "gpt" in model_name.lower() or "openai" in model_name.lower() or "o3-mini" in model_name.lower():
         openai_key = os.getenv("OPENAI_API_KEY")
         if openai_key is None:
             raise ValueError("OPENAI_API_KEY is not set")
@@ -247,7 +247,7 @@ def finalize_answer(state: OverallState, config: RunnableConfig):
         Dictionary with state update, including running_summary key containing the formatted final summary with sources
     """
     configurable = Configuration.from_runnable_config(config)
-    reasoning_model = state.get("reasoning_model") or configurable.reasoning_model
+    reasoning_model = state.get("answer_model") or configurable.answer_model
 
     # Format the prompt
     current_date = get_current_date()
